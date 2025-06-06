@@ -1,8 +1,3 @@
-Absolutely, Grooty! Here’s a sharp and elegant `README.md` for your [**Bhojan**](https://github.com/imgrooty/bhojan) repo — structured to attract developers, designers, or potential users who want a clean food ordering or canteen-like web solution.
-
----
-
-````markdown
 # 🍽️ Bhojan
 
 **A minimalistic, modern web app for browsing, ordering, and managing meals.**  
@@ -47,66 +42,3 @@ npm install
 
 # Run development server
 npm run dev
-````
-
-Open `http://localhost:3000` to see the app live on your machine.
-
----
-
-## 🔧 Project Structure
-
-```
-/components      → Reusable UI components (Navbar, MenuCard, Footer, etc.)
-/pages           → Next.js routes (index, menu, cart)
-/public/images   → Food item images
-/styles          → Global styling if needed
-```
-
----
-
-## 📸 Screenshots
-
-Coming soon...
-
-> Want your food UI showcased here? Fork the repo and submit a PR!
-
----
-
-## 🚀 Future Enhancements
-
-* 🔐 User login + admin dashboard
-* 🧾 Online payment integration (eSewa, Khalti, Stripe)
-* 🍛 Backend (Strapi/Express) for dynamic content
-* 🗓️ Order scheduling & real-time updates
-* 📱 Convert to PWA/mobile app
-
----
-
-## 👨‍🍳 Author
-
-Crafted with code and cravings by [**@imgrooty**](https://github.com/imgrooty)
-
----
-
-## 📄 License
-
-Licensed under the [MIT License](LICENSE)
-
----
-
-## ⭐ Support This Project
-
-If you like what you see, leave a ⭐ on the repo and share it with fellow developers and designers!
-
-```
-
----
-
-Let me know if you'd like to add:
-- Admin panel features
-- QR code ordering support
-- Food delivery tracking
-- Screenshots/mockups
-
-I can also generate a UI preview image for the README if you want a fancy touch!
-```
