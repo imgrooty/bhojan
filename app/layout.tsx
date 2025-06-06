@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Mithila Rasoi | Authentic Maithil Cuisine",
+  title: "Bhojan | Authentic Maithil Cuisine",
   description: "A modern celebration of traditional Maithil culture, cuisine, and art.",
   icons: {
     icon: '/logo.png', // /public path
