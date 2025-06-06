@@ -4,6 +4,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Mithila Rasoi | Authentic Maithil Cuisine",
   description: "A modern celebration of traditional Maithil culture, cuisine, and art.",
+  icons: {
+    icon: '/logo.png', // /public path
+  },
 };
 
 export default function RootLayout({
