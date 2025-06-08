@@ -49,7 +49,7 @@ export function Menu() {
           description: "Stuffed flatbread with roasted gram flour and spices",
           price: "₹120",
           isVeg: true,
-          image: "/placeholder.svg?height=300&width=400",
+          image: "/sattuparatha.jpg?height=300&width=400",
           ingredients: ["Wheat Flour", "Roasted Gram Flour", "Onions", "Green Chilies", "Coriander", "Mustard Oil"],
           preparationTime: "20 minutes",
           spiceLevel: 3,
@@ -265,7 +265,7 @@ export function Menu() {
                             View Details
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                        <DialogContent className="max-w-2xl bg-opacity-80 bg-white backdrop-blur-sm max-h-[90vh] overflow-y-auto">
                           <DialogHeader>
                             <DialogTitle className="text-2xl font-bold text-orange-800 flex items-center gap-2">
                               {item.name}

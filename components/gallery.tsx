@@ -13,7 +13,7 @@ export function Gallery() {
       title: "Dal Bhat Thali",
     },
     {
-      src: "/placeholder.svg?height=400&width=600",
+      src: "/sattuparatha.jpg",
       alt: "Fresh Sattu Paratha",
       title: "Sattu Paratha",
     },

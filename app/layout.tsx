@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Bhojan | Authentic Maithil Cuisine",
   description: "A modern celebration of traditional Maithil culture, cuisine, and art.",
   icons: {
-    icon: '/logo.png', // /public path
+    icon: './public/logo.png', // /public path
   },
 };
 

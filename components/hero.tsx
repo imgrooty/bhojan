@@ -8,6 +8,11 @@ export function Hero() {
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
+        <div className="mt-20 flex items-center justify-center h-full-auto w-full-auto rounded-full">
+           <img src="./logo.png" alt="" className="h-full w-auto w-auto z-10 rounded-full" />
+        </div>
+       
+        {/* Gradient Background */}
         <div className="absolute inset-0 bg-gradient-to-r from-orange-600 to-red-600"></div>
         <div
           className="absolute inset-0"

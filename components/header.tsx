@@ -16,13 +16,14 @@ export function Header() {
   ]
 
   return (
-    <header className="fixed top-0 w-full bg-white/95 backdrop-blur-sm shadow-lg z-50 border-b-4 border-orange-600">
+    <header className="fixed top-0 w-full bg-opacity-40 backdrop-blur-sm shadow-lg z-50 border-b-4 border-orange-600">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center space-x-2">
             <div className="w-12 h-12 bg-gradient-to-br from-orange-600 to-red-600 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-xl">भ</span>
+              {/* <span className="text-white font-bold text-xl">भ</span> */}
+              <img src="/logo.png" alt="भ" className="rounded-full"/>
             </div>
             <div>
               <h1 className="text-2xl font-bold text-orange-800">Bhojan</h1>
