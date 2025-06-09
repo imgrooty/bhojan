@@ -1,12 +1,22 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { auth } from "@/lib/firebase"
+import { onAuthStateChanged, User } from "firebase/auth"
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [user, setUser] = useState<User | null>(null)
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser)
+    })
+    return () => unsubscribe()
+  }, [])
 
   const navItems = [
     { name: "Home", href: "#home" },
@@ -47,12 +57,23 @@ export function Header() {
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-600 transition-all duration-200 group-hover:w-full"></span>
               </button>
             ))}
-            {/* Login/Signup Button */}
-            <Link href="/login">
-              <Button className="ml-4 bg-orange-600 hover:bg-orange-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors duration-200">
-                Login / Signup
-              </Button>
-            </Link>
+            {/* User Profile or Login/Signup Button */}
+            {user ? (
+              <Link href="/profile">
+                <img
+                  src={user.photoURL || "/default-avatar.png"}
+                  alt={user.displayName || "Profile"}
+                  className="ml-4 w-10 h-10 rounded-full border-2 border-orange-600 object-cover cursor-pointer"
+                  title={user.displayName || user.email || "Profile"}
+                />
+              </Link>
+            ) : (
+              <Link href="/login">
+                <Button className="ml-4 bg-orange-600 hover:bg-orange-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors duration-200">
+                  Login / Signup
+                </Button>
+              </Link>
+            )}
           </nav>
 
           {/* Mobile Menu Button */}
@@ -83,12 +104,23 @@ export function Header() {
                   {item.name}
                 </button>
               ))}
-              {/* Login/Signup Button for Mobile */}
-              <Link href="/login">
-                <Button className="mt-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors duration-200 w-full">
-                  Login / Signup
-                </Button>
-              </Link>
+              {/* User Profile or Login/Signup Button for Mobile */}
+              {user ? (
+                <Link href="/profile" className="flex items-center mt-2">
+                  <img
+                    src={user.photoURL || "/default-avatar.png"}
+                    alt={user.displayName || "Profile"}
+                    className="w-10 h-10 rounded-full border-2 border-orange-600 object-cover mr-2"
+                  />
+                  <span className="text-orange-800 font-medium">{user.displayName || user.email}</span>
+                </Link>
+              ) : (
+                <Link href="/login">
+                  <Button className="mt-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors duration-200 w-full">
+                    Login / Signup
+                  </Button>
+                </Link>
+              )}
             </div>
           </nav>
         )}
