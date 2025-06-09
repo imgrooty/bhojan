@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Bhojan | Authentic Maithil Cuisine",
   description: "A modern celebration of traditional Maithil culture, cuisine, and art.",
   icons: {
-    icon: './public/logo.png', // /public path
+    icon: '/logo.png', // /public path
   },
 };
 
@@ -20,6 +20,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+        {/* <link rel="icon" href="/logo.png" type="image/png" /> */}
       </head>
       <body>
         {children}

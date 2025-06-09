@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -46,6 +47,12 @@ export function Header() {
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-600 transition-all duration-200 group-hover:w-full"></span>
               </button>
             ))}
+            {/* Login/Signup Button */}
+            <Link href="/login">
+              <Button className="ml-4 bg-orange-600 hover:bg-orange-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors duration-200">
+                Login / Signup
+              </Button>
+            </Link>
           </nav>
 
           {/* Mobile Menu Button */}
@@ -76,6 +83,12 @@ export function Header() {
                   {item.name}
                 </button>
               ))}
+              {/* Login/Signup Button for Mobile */}
+              <Link href="/login">
+                <Button className="mt-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors duration-200 w-full">
+                  Login / Signup
+                </Button>
+              </Link>
             </div>
           </nav>
         )}
