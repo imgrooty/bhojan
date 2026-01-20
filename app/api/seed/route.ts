@@ -1,14 +1,21 @@
 import { NextResponse } from "next/server";
+export const dynamic = "force-dynamic";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, getDocs, query, limit } from "firebase/firestore";
 import { menuCategories, galleryImages } from "@/lib/seed-data";
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const secret = searchParams.get('secret');
+  let secret: string | null = null;
+  try {
+    const { searchParams } = new URL(request.url);
+    secret = searchParams.get('secret');
+  } catch (e) {
+    return NextResponse.json({ error: 'Invalid request URL' }, { status: 400 });
+  }
 
   // Simple security check
-  if (secret !== (process.env.SEED_SECRET || 'seed123')) {
+  const expectedSecret = process.env.SEED_SECRET || 'seed123';
+  if (!secret || secret !== expectedSecret) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
