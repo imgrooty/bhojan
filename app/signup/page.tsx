@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { auth } from "@/lib/firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 
 export default function SignupPage() {
@@ -17,20 +18,19 @@ export default function SignupPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError(null);
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName: name });
+      toast.success("Account created successfully! Redirecting...");
       router.push("/");
     } catch (err: any) {
-      setError(err.message || "Signup failed. Please try again.");
+      toast.error(err.message || "Signup failed. Please try again.");
     }
 
     setIsLoading(false);
@@ -130,12 +130,6 @@ export default function SignupPage() {
                   </button>
                 </div>
               </div>
-
-              {error && (
-                <div className="bg-red-50 border border-red-200 text-red-600 text-sm p-3 rounded-md">
-                  {error}
-                </div>
-              )}
 
               {/* Signup Button */}
               <Button

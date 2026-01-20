@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { auth } from "@/lib/firebase";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, GithubAuthProvider } from "firebase/auth";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 
 export default function LoginPage() {
@@ -17,19 +18,18 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError(null);
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      toast.success("Login successful! Redirecting...");
       router.push("/");
     } catch (err: any) {
-      setError(err.message || "Login failed. Please check your credentials.");
+      toast.error(err.message || "Login failed. Please check your credentials.");
     }
 
     setIsLoading(false);
@@ -37,26 +37,26 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     setIsLoading(true);
-    setError(null);
     try {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
+      toast.success("Google login successful! Redirecting...");
       router.push("/");
     } catch (err: any) {
-      setError(err.message || "Google login failed.");
+      toast.error(err.message || "Google login failed.");
     }
     setIsLoading(false);
   };
 
   const handleGithubLogin = async () => {
     setIsLoading(true);
-    setError(null);
     try {
       const provider = new GithubAuthProvider();
       await signInWithPopup(auth, provider);
+      toast.success("GitHub login successful! Redirecting...");
       router.push("/");
     } catch (err: any) {
-      setError(err.message || "Github login failed.");
+      toast.error(err.message || "GitHub login failed.");
     }
     setIsLoading(false);
   };
@@ -154,12 +154,6 @@ export default function LoginPage() {
                   Forgot password?
                 </Link>
               </div>
-
-              {error && (
-                <div className="bg-red-50 border border-red-200 text-red-600 text-sm p-3 rounded-md">
-                  {error}
-                </div>
-              )}
 
               {/* Login Button */}
               <Button
