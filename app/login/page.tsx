@@ -44,8 +44,8 @@ export default function LoginPage() {
       router.push("/");
     } catch (err: any) {
       setError(err.message || "Google login failed.");
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const handleGithubLogin = async () => {
@@ -57,8 +57,8 @@ export default function LoginPage() {
       router.push("/");
     } catch (err: any) {
       setError(err.message || "Github login failed.");
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (

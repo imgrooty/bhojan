@@ -36,32 +36,36 @@ export function Menu() {
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null)
   const [categories, setCategories] = useState<MenuCategory[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchMenu = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const categoriesSnapshot = await getDocs(query(collection(db, "menuCategories"), orderBy("order")));
+      const itemsSnapshot = await getDocs(collection(db, "menuItems"));
+
+      const allItems = itemsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as MenuItem));
+
+      const fetchedCategories = categoriesSnapshot.docs.map(doc => {
+        const categoryData = doc.data();
+        return {
+          id: doc.id,
+          title: categoryData.title,
+          items: allItems.filter(item => item.categoryId === doc.id)
+        };
+      });
+
+      setCategories(fetchedCategories);
+    } catch (err: any) {
+      console.error("Error fetching menu:", err);
+      setError("Failed to load menu. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    async function fetchMenu() {
-      try {
-        const categoriesSnapshot = await getDocs(query(collection(db, "menuCategories"), orderBy("order")));
-        const itemsSnapshot = await getDocs(collection(db, "menuItems"));
-
-        const allItems = itemsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as MenuItem));
-
-        const fetchedCategories = categoriesSnapshot.docs.map(doc => {
-          const categoryData = doc.data();
-          return {
-            id: doc.id,
-            title: categoryData.title,
-            items: allItems.filter(item => item.categoryId === doc.id)
-          };
-        });
-
-        setCategories(fetchedCategories);
-      } catch (error) {
-        console.error("Error fetching menu:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
     fetchMenu();
   }, [])
 
@@ -92,7 +96,17 @@ export function Menu() {
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="w-12 h-12 text-orange-600 animate-spin mb-4" />
-        <p className="text-lg text-orange-800 font-medium">Loading Mithila Flavors...</p>
+              <p className="text-lg text-orange-800 font-medium">Loading Mithila Flavors...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-20">
+              <p className="text-red-600 mb-4">{error}</p>
+              <Button
+                onClick={fetchMenu}
+                className="bg-orange-600 hover:bg-orange-700 text-white"
+              >
+                Retry
+              </Button>
             </div>
           ) : categories.map((category, categoryIndex) => (
             <div key={categoryIndex}>
