@@ -1,10 +1,46 @@
+"use client"
+
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { MapPin, Phone, Mail, Clock } from "lucide-react"
+import { MapPin, Phone, Mail, Clock, Loader2, CheckCircle2 } from "lucide-react"
+import { db } from "@/lib/firebase"
+import { collection, addDoc, serverTimestamp } from "firebase/firestore"
 
 export function Contact() {
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    subject: "",
+    message: ""
+  })
+  const [loading, setLoading] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState("")
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      await addDoc(collection(db, "messages"), {
+        ...formData,
+        createdAt: serverTimestamp()
+      });
+      setSubmitted(true);
+      setFormData({ name: "", phone: "", email: "", subject: "", message: "" });
+    } catch (err) {
+      console.error("Error submitting contact form:", err);
+      setError("Failed to send message. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const contactInfo = [
     {
       icon: MapPin,
@@ -90,55 +126,100 @@ export function Contact() {
               <CardHeader>
                 <CardTitle className="text-2xl font-bold text-orange-800">Send us a Message</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Name *</label>
-                    <Input
-                      placeholder="Your full name"
-                      className="border-orange-200 focus:border-orange-400 focus:ring-orange-400"
-                    />
+              <CardContent>
+                {submitted ? (
+                  <div className="text-center py-12 space-y-4">
+                    <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <CheckCircle2 className="w-10 h-10" />
+                    </div>
+                    <h4 className="text-2xl font-bold text-orange-800">Message Sent!</h4>
+                    <p className="text-gray-700">Thank you for reaching out. We'll get back to you soon.</p>
+                    <Button
+                      onClick={() => setSubmitted(false)}
+                      variant="outline"
+                      className="mt-4 border-orange-600 text-orange-600 hover:bg-orange-50"
+                    >
+                      Send another message
+                    </Button>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
-                    <Input
-                      placeholder="Your phone number"
-                      className="border-orange-200 focus:border-orange-400 focus:ring-orange-400"
-                    />
-                  </div>
-                </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Name *</label>
+                        <Input
+                          required
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          placeholder="Your full name"
+                          className="border-orange-200 focus:border-orange-400 focus:ring-orange-400"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                        <Input
+                          value={formData.phone}
+                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                          placeholder="Your phone number"
+                          className="border-orange-200 focus:border-orange-400 focus:ring-orange-400"
+                        />
+                      </div>
+                    </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email *</label>
-                  <Input
-                    type="email"
-                    placeholder="your.email@example.com"
-                    className="border-orange-200 focus:border-orange-400 focus:ring-orange-400"
-                  />
-                </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Email *</label>
+                      <Input
+                        required
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        placeholder="your.email@example.com"
+                        className="border-orange-200 focus:border-orange-400 focus:ring-orange-400"
+                      />
+                    </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
-                  <Input
-                    placeholder="What is this regarding?"
-                    className="border-orange-200 focus:border-orange-400 focus:ring-orange-400"
-                  />
-                </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+                      <Input
+                        value={formData.subject}
+                        onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                        placeholder="What is this regarding?"
+                        className="border-orange-200 focus:border-orange-400 focus:ring-orange-400"
+                      />
+                    </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Message *</label>
-                  <Textarea
-                    placeholder="Tell us how we can help you..."
-                    rows={5}
-                    className="border-orange-200 focus:border-orange-400 focus:ring-orange-400"
-                  />
-                </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Message *</label>
+                      <Textarea
+                        required
+                        value={formData.message}
+                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                        placeholder="Tell us how we can help you..."
+                        rows={5}
+                        className="border-orange-200 focus:border-orange-400 focus:ring-orange-400"
+                      />
+                    </div>
 
-                <Button className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white py-3 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
-                  Send Message
-                </Button>
+                    {error && <p className="text-red-600 text-sm text-center">{error}</p>}
 
-                <p className="text-sm text-gray-600 text-center">We'll get back to you within 24 hours</p>
+                    <Button
+                      disabled={loading}
+                      type="submit"
+                      className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white py-3 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        "Send Message"
+                      )}
+                    </Button>
+
+                    <p className="text-sm text-gray-600 text-center">We'll get back to you within 24 hours</p>
+                  </form>
+                )}
               </CardContent>
             </Card>
           </div>

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { auth } from "@/lib/firebase";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, GithubAuthProvider } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
 
 export default function LoginPage() {
@@ -16,6 +17,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,10 +25,9 @@ export default function LoginPage() {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      // Redirect or show success
       console.log("Login successful");
+      router.push("/");
     } catch (error) {
-      // Handle error
       alert("Login failed: " + (error as any).message);
     }
 
@@ -38,9 +39,8 @@ export default function LoginPage() {
     try {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
-      // Redirect or show success
       console.log("Google login successful");
-      window.location.href = "/";
+      router.push("/");
     } catch (error) {
       alert("Google login failed: " + (error as any).message);
     }
@@ -52,9 +52,8 @@ export default function LoginPage() {
     try {
       const provider = new GithubAuthProvider();
       await signInWithPopup(auth, provider);
-      // Redirect or show success
       console.log("Github login successful");
-      window.location.href = "/";
+      router.push("/");
     } catch (error) {
       alert("Github login failed: " + (error as any).message);
     }
