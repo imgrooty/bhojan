@@ -38,33 +38,33 @@ export function Menu() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    async function fetchMenu() {
-      setLoading(true);
-      setError(null);
-      try {
-        const categoriesSnapshot = await getDocs(query(collection(db, "menuCategories"), orderBy("order")));
-        const itemsSnapshot = await getDocs(collection(db, "menuItems"));
+  const fetchMenu = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const categoriesSnapshot = await getDocs(query(collection(db, "menuCategories"), orderBy("order")));
+      const itemsSnapshot = await getDocs(collection(db, "menuItems"));
 
-        const allItems = itemsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as MenuItem));
+      const allItems = itemsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as MenuItem));
 
-        const fetchedCategories = categoriesSnapshot.docs.map(doc => {
-          const categoryData = doc.data();
-          return {
-            id: doc.id,
-            title: categoryData.title,
-            items: allItems.filter(item => item.categoryId === doc.id)
-          };
-        });
+      const fetchedCategories = categoriesSnapshot.docs.map(doc => {
+        const categoryData = doc.data();
+        return {
+          id: doc.id,
+          title: categoryData.title,
+          items: allItems.filter(item => item.categoryId === doc.id)
+        };
+      });
 
-        setCategories(fetchedCategories);
-      } catch (err: any) {
-        setError("Failed to load menu. Please try again.");
-      } finally {
-        setLoading(false);
-      }
+      setCategories(fetchedCategories);
+    } catch (err: any) {
+      setError("Failed to load menu. Please try again.");
+    } finally {
+      setLoading(false);
     }
+  };
 
+  useEffect(() => {
     fetchMenu();
   }, [])
 
@@ -101,7 +101,7 @@ export function Menu() {
             <div className="flex flex-col items-center justify-center py-20">
               <p className="text-red-600 mb-4">{error}</p>
               <Button
-                onClick={() => window.location.reload()}
+                onClick={fetchMenu}
                 className="bg-orange-600 text-white hover:bg-orange-700"
               >
                 Retry
