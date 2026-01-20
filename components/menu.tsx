@@ -56,7 +56,7 @@ export function Menu() {
 
         setCategories(fetchedCategories);
       } catch (error) {
-        console.error("Error fetching menu:", error);
+        // Error is silently caught - menu will show empty/loading state
       } finally {
         setLoading(false);
       }

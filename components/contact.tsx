@@ -34,7 +34,6 @@ export function Contact() {
       setSubmitted(true);
       setFormData({ name: "", phone: "", email: "", subject: "", message: "" });
     } catch (err) {
-      console.error("Error submitting contact form:", err);
       setError("Failed to send message. Please try again later.");
     } finally {
       setLoading(false);

@@ -27,7 +27,6 @@ export function Gallery() {
       const fetchedImages = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as GalleryImage));
       setImages(fetchedImages);
     } catch (err: any) {
-      console.error("Error fetching gallery:", err);
       setError("Failed to load gallery images. Please try again.");
     } finally {
       setLoading(false);

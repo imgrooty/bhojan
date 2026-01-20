@@ -46,7 +46,6 @@ export async function GET(request: Request) {
       galleryCount: galleryImages.length
     });
   } catch (error) {
-    console.error("Seeding error:", error);
     return NextResponse.json({ error: (error as any).message }, { status: 500 });
   }
 }
