@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -38,7 +38,7 @@ export function Menu() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchMenu = async () => {
+  const fetchMenu = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -57,16 +57,16 @@ export function Menu() {
       });
 
       setCategories(fetchedCategories);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError("Failed to load menu. Please try again.");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchMenu();
-  }, [])
+  }, [fetchMenu])
 
   const SpiceLevel = ({ level }: { level: number }) => (
     <div className="flex items-center gap-1">
