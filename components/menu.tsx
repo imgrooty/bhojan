@@ -63,7 +63,7 @@ export function Menu() {
     } finally {
       setLoading(false);
     }
-  };
+  };;
 
   useEffect(() => {
     fetchMenu();

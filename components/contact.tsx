@@ -9,6 +9,9 @@ import { MapPin, Phone, Mail, Clock, Loader2, CheckCircle2 } from "lucide-react"
 import { db } from "@/lib/firebase"
 import { collection, addDoc, serverTimestamp } from "firebase/firestore"
 
+// Phone validation pattern: supports international formats with optional country code, separators
+const PHONE_VALIDATION_PATTERN = "[\\+]?[(]?[0-9]{1,4}[)]?[-\\s\\.]?[(]?[0-9]{1,4}[)]?[-\\s\\.]?[0-9]{1,9}";
+
 export function Contact() {
   const [formData, setFormData] = useState({
     name: "",
@@ -162,7 +165,7 @@ export function Contact() {
                           value={formData.phone}
                           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                           placeholder="Your phone number"
-                          pattern="[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,9}"
+                          pattern={PHONE_VALIDATION_PATTERN}
                           title="Please enter a valid phone number (e.g., +977-9841234567)"
                           className="border-orange-200 focus:border-orange-400 focus:ring-orange-400"
                         />

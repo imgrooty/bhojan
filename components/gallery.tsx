@@ -33,7 +33,7 @@ export function Gallery() {
     } finally {
       setLoading(false);
     }
-  };
+  };;
 
   useEffect(() => {
     fetchGallery();
