@@ -24,11 +24,17 @@ export function Gallery() {
     setError(null);
     try {
       const querySnapshot = await getDocs(collection(db, "gallery"));
+
+      if (querySnapshot.empty) {
+        setImages([]);
+        return;
+      }
+
       const fetchedImages = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as GalleryImage));
       setImages(fetchedImages);
     } catch (err: any) {
       console.error("Error fetching gallery:", err);
-      setError("Failed to load gallery images. Please try again.");
+      setError("Unable to capture Mithila's beauty at this moment. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -57,14 +63,19 @@ export function Gallery() {
               <p className="text-lg text-orange-800 font-medium">Capturing Mithila's Beauty...</p>
             </div>
           ) : error ? (
-            <div className="col-span-full text-center py-20">
-              <p className="text-red-600 mb-4">{error}</p>
+            <div className="col-span-full text-center py-20 bg-white rounded-2xl border-2 border-orange-100">
+              <p className="text-red-600 mb-6 text-lg font-medium">{error}</p>
               <button
                 onClick={fetchGallery}
-                className="px-6 py-2 bg-orange-600 text-white rounded-full hover:bg-orange-700 transition-colors"
+                className="px-6 py-2 bg-orange-600 text-white rounded-full hover:bg-orange-700 transition-colors shadow-lg"
               >
                 Retry
               </button>
+            </div>
+          ) : images.length === 0 ? (
+            <div className="col-span-full text-center py-20 bg-white rounded-2xl border-2 border-orange-100">
+              <p className="text-orange-800 text-lg font-medium mb-2">Our gallery is currently empty.</p>
+              <p className="text-gray-600">We're out capturing new memories of Mithila. Check back soon!</p>
             </div>
           ) : images.map((image, index) => (
             <Card

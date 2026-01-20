@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { CartProvider } from "@/lib/cart-context";
 
 export const metadata: Metadata = {
   title: "Bhojan | Authentic Maithil Cuisine",
@@ -23,7 +24,9 @@ export default function RootLayout({
         {/* <link rel="icon" href="/logo.png" type="image/png" /> */}
       </head>
       <body>
-        {children}
+        <CartProvider>
+          {children}
+        </CartProvider>
       </body>
     </html>
   );
