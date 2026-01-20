@@ -17,19 +17,24 @@ export function Gallery() {
   const [selectedImage, setSelectedImage] = useState<number | null>(null)
   const [images, setImages] = useState<GalleryImage[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchGallery = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const querySnapshot = await getDocs(collection(db, "gallery"));
+      const fetchedImages = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as GalleryImage));
+      setImages(fetchedImages);
+    } catch (err: any) {
+      console.error("Error fetching gallery:", err);
+      setError("Failed to load gallery images. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    async function fetchGallery() {
-      try {
-        const querySnapshot = await getDocs(collection(db, "gallery"));
-        const fetchedImages = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as GalleryImage));
-        setImages(fetchedImages);
-      } catch (error) {
-        console.error("Error fetching gallery:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
     fetchGallery();
   }, [])
 
@@ -50,6 +55,16 @@ export function Gallery() {
             <div className="col-span-full flex flex-col items-center justify-center py-20">
               <Loader2 className="w-12 h-12 text-orange-600 animate-spin mb-4" />
               <p className="text-lg text-orange-800 font-medium">Capturing Mithila's Beauty...</p>
+            </div>
+          ) : error ? (
+            <div className="col-span-full text-center py-20">
+              <p className="text-red-600 mb-4">{error}</p>
+              <button
+                onClick={fetchGallery}
+                className="px-6 py-2 bg-orange-600 text-white rounded-full hover:bg-orange-700 transition-colors"
+              >
+                Retry
+              </button>
             </div>
           ) : images.map((image, index) => (
             <Card

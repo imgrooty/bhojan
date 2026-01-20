@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, getDocs, deleteDoc, query, writeBatch, doc, limit } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, limit } from "firebase/firestore";
 import { menuCategories, galleryImages } from "@/lib/seed-data";
 
 export async function GET(request: Request) {
@@ -8,7 +8,7 @@ export async function GET(request: Request) {
   const secret = searchParams.get('secret');
 
   // Simple security check
-  if (secret !== 'seed123') {
+  if (secret !== (process.env.SEED_SECRET || 'seed123')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

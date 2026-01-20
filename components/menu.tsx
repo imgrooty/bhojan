@@ -92,7 +92,7 @@ export function Menu() {
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="w-12 h-12 text-orange-600 animate-spin mb-4" />
-              <p className="text-lg text-orange-800 font-medium">Loding Mithila Flavors...</p>
+        <p className="text-lg text-orange-800 font-medium">Loading Mithila Flavors...</p>
             </div>
           ) : categories.map((category, categoryIndex) => (
             <div key={categoryIndex}>

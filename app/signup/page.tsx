@@ -17,19 +17,20 @@ export default function SignupPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName: name });
-      console.log("Signup successful");
       router.push("/");
-    } catch (error) {
-      alert("Signup failed: " + (error as any).message);
+    } catch (err: any) {
+      setError(err.message || "Signup failed. Please try again.");
     }
 
     setIsLoading(false);
@@ -118,7 +119,7 @@ export default function SignupPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     className="pl-10 pr-10 border-amber-200 focus:border-amber-400 focus:ring-amber-400/20"
                     required
-                    minLength={6}
+                    minLength={8}
                   />
                   <button
                     type="button"
@@ -129,6 +130,12 @@ export default function SignupPage() {
                   </button>
                 </div>
               </div>
+
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-600 text-sm p-3 rounded-md">
+                  {error}
+                </div>
+              )}
 
               {/* Signup Button */}
               <Button

@@ -17,18 +17,19 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      console.log("Login successful");
       router.push("/");
-    } catch (error) {
-      alert("Login failed: " + (error as any).message);
+    } catch (err: any) {
+      setError(err.message || "Login failed. Please check your credentials.");
     }
 
     setIsLoading(false);
@@ -36,26 +37,26 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     setIsLoading(true);
+    setError(null);
     try {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
-      console.log("Google login successful");
       router.push("/");
-    } catch (error) {
-      alert("Google login failed: " + (error as any).message);
+    } catch (err: any) {
+      setError(err.message || "Google login failed.");
     }
     setIsLoading(false);
   };
 
   const handleGithubLogin = async () => {
     setIsLoading(true);
+    setError(null);
     try {
       const provider = new GithubAuthProvider();
       await signInWithPopup(auth, provider);
-      console.log("Github login successful");
       router.push("/");
-    } catch (error) {
-      alert("Github login failed: " + (error as any).message);
+    } catch (err: any) {
+      setError(err.message || "Github login failed.");
     }
     setIsLoading(false);
   };
@@ -153,6 +154,12 @@ export default function LoginPage() {
                   Forgot password?
                 </Link>
               </div>
+
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-600 text-sm p-3 rounded-md">
+                  {error}
+                </div>
+              )}
 
               {/* Login Button */}
               <Button
