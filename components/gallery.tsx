@@ -1,42 +1,43 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Card } from "@/components/ui/card"
-import { db } from "@/lib/firebase"
-import { collection, getDocs } from "firebase/firestore"
-import { Loader2 } from "lucide-react"
-
-interface GalleryImage {
-  id?: string
-  src: string
-  alt: string
-  title: string
-}
 
 export function Gallery() {
   const [selectedImage, setSelectedImage] = useState<number | null>(null)
-  const [images, setImages] = useState<GalleryImage[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
-  const fetchGallery = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const querySnapshot = await getDocs(collection(db, "gallery"));
-      const fetchedImages = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as GalleryImage));
-      setImages(fetchedImages);
-    } catch (err: any) {
-      console.error("Error fetching gallery:", err);
-      setError("Failed to load gallery images. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    fetchGallery();
-  }, [])
+  const galleryImages = [
+    {
+      src: "/placeholder.svg?height=400&width=600",
+      alt: "Traditional Mithila Dal Bhat",
+      title: "Dal Bhat Thali",
+    },
+    {
+      src: "/sattuparatha.jpg",
+      alt: "Fresh Sattu Paratha",
+      title: "Sattu Paratha",
+    },
+    {
+      src: "/placeholder.svg?height=400&width=600",
+      alt: "Mithila Fish Curry",
+      title: "Fish Curry",
+    },
+    {
+      src: "/placeholder.svg?height=400&width=600",
+      alt: "Traditional Thekua",
+      title: "Thekua Sweets",
+    },
+    {
+      src: "/placeholder.svg?height=400&width=600",
+      alt: "Restaurant Interior",
+      title: "Our Restaurant",
+    },
+    {
+      src: "/placeholder.svg?height=400&width=600",
+      alt: "Mithila Art Decoration",
+      title: "Traditional Decor",
+    },
+  ]
 
   return (
     <section id="gallery" className="py-20 bg-gradient-to-b from-amber-50 to-orange-50">
@@ -51,24 +52,9 @@ export function Gallery() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {loading ? (
-            <div className="col-span-full flex flex-col items-center justify-center py-20">
-              <Loader2 className="w-12 h-12 text-orange-600 animate-spin mb-4" />
-              <p className="text-lg text-orange-800 font-medium">Capturing Mithila's Beauty...</p>
-            </div>
-          ) : error ? (
-            <div className="col-span-full text-center py-20">
-              <p className="text-red-600 mb-4">{error}</p>
-              <button
-                onClick={fetchGallery}
-                className="px-6 py-2 bg-orange-600 text-white rounded-full hover:bg-orange-700 transition-colors"
-              >
-                Retry
-              </button>
-            </div>
-          ) : images.map((image, index) => (
+          {galleryImages.map((image, index) => (
             <Card
-              key={image.id || index}
+              key={index}
               className="overflow-hidden cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl border-2 border-orange-200 hover:border-orange-400"
               onClick={() => setSelectedImage(index)}
             >
@@ -89,15 +75,15 @@ export function Gallery() {
         </div>
 
         {/* Modal for enlarged image */}
-        {selectedImage !== null && images[selectedImage] && (
+        {selectedImage !== null && (
           <div
             className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
             onClick={() => setSelectedImage(null)}
           >
             <div className="relative max-w-4xl max-h-full">
               <img
-                src={images[selectedImage].src || "/placeholder.svg"}
-                alt={images[selectedImage].alt}
+                src={galleryImages[selectedImage].src || "/placeholder.svg"}
+                alt={galleryImages[selectedImage].alt}
                 className="max-w-full max-h-full object-contain rounded-lg"
               />
               <button

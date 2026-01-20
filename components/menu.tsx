@@ -1,16 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Eye, Star, Loader2 } from "lucide-react"
-import { db } from "@/lib/firebase"
-import { collection, getDocs, query, orderBy } from "firebase/firestore"
+import { Eye, Star } from "lucide-react"
 
 interface MenuItem {
-  id?: string
   name: string
   description: string
   price: string
@@ -23,47 +20,173 @@ interface MenuItem {
   calories: string
   allergens: string[]
   story?: string
-  categoryId?: string
-}
-
-interface MenuCategory {
-  id: string
-  title: string
-  items: MenuItem[]
 }
 
 export function Menu() {
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null)
-  const [categories, setCategories] = useState<MenuCategory[]>([])
-  const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    async function fetchMenu() {
-      try {
-        const categoriesSnapshot = await getDocs(query(collection(db, "menuCategories"), orderBy("order")));
-        const itemsSnapshot = await getDocs(collection(db, "menuItems"));
-
-        const allItems = itemsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as MenuItem));
-
-        const fetchedCategories = categoriesSnapshot.docs.map(doc => {
-          const categoryData = doc.data();
-          return {
-            id: doc.id,
-            title: categoryData.title,
-            items: allItems.filter(item => item.categoryId === doc.id)
-          };
-        });
-
-        setCategories(fetchedCategories);
-      } catch (error) {
-        console.error("Error fetching menu:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchMenu();
-  }, [])
+  const menuCategories = [
+    {
+      title: "मुख्य व्यंजन (Main Dishes)",
+      items: [
+        {
+          name: "Mithila Dal Bhat",
+          description: "Traditional lentil curry with steamed rice, a staple of Mithila cuisine",
+          price: "₹180",
+          isVeg: true,
+          isSpecial: true,
+          image: "/placeholder.svg?height=300&width=400",
+          ingredients: ["Basmati Rice", "Mixed Lentils", "Turmeric", "Cumin", "Ginger", "Garlic", "Ghee"],
+          preparationTime: "25 minutes",
+          spiceLevel: 2,
+          calories: "420 kcal",
+          allergens: ["Gluten"],
+          story:
+            "This traditional combination has been the heart of Mithila meals for centuries, representing the perfect balance of protein and carbohydrates.",
+        },
+        {
+          name: "Sattu Paratha",
+          description: "Stuffed flatbread with roasted gram flour and spices",
+          price: "₹120",
+          isVeg: true,
+          image: "/sattuparatha.jpg?height=300&width=400",
+          ingredients: ["Wheat Flour", "Roasted Gram Flour", "Onions", "Green Chilies", "Coriander", "Mustard Oil"],
+          preparationTime: "20 minutes",
+          spiceLevel: 3,
+          calories: "350 kcal",
+          allergens: ["Gluten"],
+          story:
+            "A nutritious and filling bread that has sustained farmers and workers in the Mithila region for generations.",
+        },
+        {
+          name: "Mithila Fish Curry",
+          description: "Fresh fish cooked in traditional Mithila spices and mustard oil",
+          price: "₹280",
+          isVeg: false,
+          isSpecial: true,
+          image: "/placeholder.svg?height=300&width=400",
+          ingredients: ["Fresh River Fish", "Mustard Oil", "Panch Phoron", "Turmeric", "Red Chilies", "Tomatoes"],
+          preparationTime: "30 minutes",
+          spiceLevel: 4,
+          calories: "320 kcal",
+          allergens: ["Fish"],
+          story:
+            "Prepared with fish from the sacred rivers of Mithila, this curry represents the region's connection to its waterways.",
+        },
+        {
+          name: "Chokha Platter",
+          description: "Mashed vegetables (potato, eggplant, tomato) with mustard oil",
+          price: "₹150",
+          isVeg: true,
+          image: "/placeholder.svg?height=300&width=400",
+          ingredients: [
+            "Roasted Potatoes",
+            "Roasted Eggplant",
+            "Roasted Tomatoes",
+            "Mustard Oil",
+            "Green Chilies",
+            "Onions",
+          ],
+          preparationTime: "35 minutes",
+          spiceLevel: 3,
+          calories: "280 kcal",
+          allergens: [],
+          story:
+            "A rustic dish that celebrates the simple flavors of roasted vegetables, enhanced with aromatic mustard oil.",
+        },
+      ],
+    },
+    {
+      title: "मिठाई (Sweets)",
+      items: [
+        {
+          name: "Thekua",
+          description: "Traditional sweet made with wheat flour, jaggery, and ghee",
+          price: "₹80",
+          isVeg: true,
+          isSpecial: true,
+          image: "/placeholder.svg?height=300&width=400",
+          ingredients: ["Wheat Flour", "Jaggery", "Ghee", "Coconut", "Fennel Seeds", "Cardamom"],
+          preparationTime: "45 minutes",
+          spiceLevel: 0,
+          calories: "180 kcal",
+          allergens: ["Gluten", "Dairy"],
+          story: "A sacred sweet offered during Chhath Puja, symbolizing devotion and tradition in Mithila culture.",
+        },
+        {
+          name: "Malpua",
+          description: "Sweet pancakes soaked in sugar syrup, served hot",
+          price: "₹100",
+          isVeg: true,
+          image: "/placeholder.svg?height=300&width=400",
+          ingredients: ["All-purpose Flour", "Milk", "Sugar", "Cardamom", "Ghee", "Pistachios"],
+          preparationTime: "25 minutes",
+          spiceLevel: 0,
+          calories: "250 kcal",
+          allergens: ["Gluten", "Dairy", "Nuts"],
+          story:
+            "These golden, syrup-soaked pancakes are a festival favorite, bringing sweetness to every celebration.",
+        },
+        {
+          name: "Kheer",
+          description: "Creamy rice pudding with cardamom and nuts",
+          price: "₹90",
+          isVeg: true,
+          image: "/placeholder.svg?height=300&width=400",
+          ingredients: ["Basmati Rice", "Full-fat Milk", "Sugar", "Cardamom", "Almonds", "Pistachios", "Saffron"],
+          preparationTime: "40 minutes",
+          spiceLevel: 0,
+          calories: "220 kcal",
+          allergens: ["Dairy", "Nuts"],
+          story: "A creamy delight that graces every auspicious occasion, representing prosperity and joy.",
+        },
+      ],
+    },
+    {
+      title: "पेय (Beverages)",
+      items: [
+        {
+          name: "Lassi",
+          description: "Traditional yogurt-based drink, sweet or salted",
+          price: "₹60",
+          isVeg: true,
+          image: "/placeholder.svg?height=300&width=400",
+          ingredients: ["Fresh Yogurt", "Sugar/Salt", "Cardamom", "Rose Water", "Mint"],
+          preparationTime: "5 minutes",
+          spiceLevel: 0,
+          calories: "150 kcal",
+          allergens: ["Dairy"],
+          story: "A cooling beverage that provides relief from the heat while aiding digestion after hearty meals.",
+        },
+        {
+          name: "Sattu Drink",
+          description: "Refreshing drink made with roasted gram flour",
+          price: "₹50",
+          isVeg: true,
+          image: "/placeholder.svg?height=300&width=400",
+          ingredients: ["Roasted Gram Flour", "Water", "Salt", "Lemon", "Mint", "Black Salt"],
+          preparationTime: "3 minutes",
+          spiceLevel: 1,
+          calories: "120 kcal",
+          allergens: [],
+          story: "A nutritious and energizing drink that has been the go-to refreshment for laborers and travelers.",
+        },
+        {
+          name: "Masala Chai",
+          description: "Spiced tea brewed with traditional Mithila spices",
+          price: "₹30",
+          isVeg: true,
+          image: "/placeholder.svg?height=300&width=400",
+          ingredients: ["Black Tea", "Milk", "Cardamom", "Cinnamon", "Ginger", "Cloves", "Sugar"],
+          preparationTime: "8 minutes",
+          spiceLevel: 2,
+          calories: "80 kcal",
+          allergens: ["Dairy"],
+          story: "The perfect blend of spices that awakens the senses and brings people together for conversations.",
+        },
+      ],
+    },
+  ]
 
   const SpiceLevel = ({ level }: { level: number }) => (
     <div className="flex items-center gap-1">
@@ -89,18 +212,13 @@ export function Menu() {
         </div>
 
         <div className="space-y-12">
-          {loading ? (
-            <div className="flex flex-col items-center justify-center py-20">
-              <Loader2 className="w-12 h-12 text-orange-600 animate-spin mb-4" />
-        <p className="text-lg text-orange-800 font-medium">Loading Mithila Flavors...</p>
-            </div>
-          ) : categories.map((category, categoryIndex) => (
+          {menuCategories.map((category, categoryIndex) => (
             <div key={categoryIndex}>
               <h4 className="text-2xl font-bold text-orange-800 mb-8 text-center">{category.title}</h4>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {category.items.map((item, itemIndex) => (
                   <Card
-                    key={item.id || itemIndex}
+                    key={itemIndex}
                     className="border-2 border-orange-100 hover:border-orange-300 transition-all duration-300 shadow-md hover:shadow-lg overflow-hidden group"
                   >
                     {/* Image */}

@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { auth } from "@/lib/firebase";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, GithubAuthProvider } from "firebase/auth";
-import { useRouter } from "next/navigation";
 
 
 export default function LoginPage() {
@@ -17,19 +16,18 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError(null);
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      router.push("/");
-    } catch (err: any) {
-      setError(err.message || "Login failed. Please check your credentials.");
+      // Redirect or show success
+      console.log("Login successful");
+    } catch (error) {
+      // Handle error
+      alert("Login failed: " + (error as any).message);
     }
 
     setIsLoading(false);
@@ -37,26 +35,28 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     setIsLoading(true);
-    setError(null);
     try {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
-      router.push("/");
-    } catch (err: any) {
-      setError(err.message || "Google login failed.");
+      // Redirect or show success
+      console.log("Google login successful");
+      window.location.href = "/";
+    } catch (error) {
+      alert("Google login failed: " + (error as any).message);
     }
     setIsLoading(false);
   };
 
   const handleGithubLogin = async () => {
     setIsLoading(true);
-    setError(null);
     try {
       const provider = new GithubAuthProvider();
       await signInWithPopup(auth, provider);
-      router.push("/");
-    } catch (err: any) {
-      setError(err.message || "Github login failed.");
+      // Redirect or show success
+      console.log("Github login successful");
+      window.location.href = "/";
+    } catch (error) {
+      alert("Github login failed: " + (error as any).message);
     }
     setIsLoading(false);
   };
@@ -154,12 +154,6 @@ export default function LoginPage() {
                   Forgot password?
                 </Link>
               </div>
-
-              {error && (
-                <div className="bg-red-50 border border-red-200 text-red-600 text-sm p-3 rounded-md">
-                  {error}
-                </div>
-              )}
 
               {/* Login Button */}
               <Button
