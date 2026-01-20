@@ -36,9 +36,12 @@ export function Menu() {
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null)
   const [categories, setCategories] = useState<MenuCategory[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     async function fetchMenu() {
+      setLoading(true);
+      setError(null);
       try {
         const categoriesSnapshot = await getDocs(query(collection(db, "menuCategories"), orderBy("order")));
         const itemsSnapshot = await getDocs(collection(db, "menuItems"));
@@ -55,8 +58,8 @@ export function Menu() {
         });
 
         setCategories(fetchedCategories);
-      } catch (error) {
-        // Error is silently caught - menu will show empty/loading state
+      } catch (err: any) {
+        setError("Failed to load menu. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -93,6 +96,16 @@ export function Menu() {
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="w-12 h-12 text-orange-600 animate-spin mb-4" />
         <p className="text-lg text-orange-800 font-medium">Loading Mithila Flavors...</p>
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <p className="text-red-600 mb-4">{error}</p>
+              <Button
+                onClick={() => window.location.reload()}
+                className="bg-orange-600 text-white hover:bg-orange-700"
+              >
+                Retry
+              </Button>
             </div>
           ) : categories.map((category, categoryIndex) => (
             <div key={categoryIndex}>
