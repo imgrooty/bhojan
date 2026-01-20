@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Eye, Star, Loader2 } from "lucide-react"
+import { Eye, Star, Loader2, AlertCircle, RefreshCw } from "lucide-react"
 import { db } from "@/lib/firebase"
 import { collection, getDocs, query, orderBy } from "firebase/firestore"
 
@@ -36,32 +36,36 @@ export function Menu() {
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null)
   const [categories, setCategories] = useState<MenuCategory[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
+
+  const fetchMenu = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const categoriesSnapshot = await getDocs(query(collection(db, "menuCategories"), orderBy("order")));
+      const itemsSnapshot = await getDocs(collection(db, "menuItems"));
+
+      const allItems = itemsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as MenuItem));
+
+      const fetchedCategories = categoriesSnapshot.docs.map(doc => {
+        const categoryData = doc.data();
+        return {
+          id: doc.id,
+          title: categoryData.title,
+          items: allItems.filter(item => item.categoryId === doc.id)
+        };
+      });
+
+      setCategories(fetchedCategories);
+    } catch (error) {
+      console.error("Error fetching menu:", error);
+      setError("Failed to load menu. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    async function fetchMenu() {
-      try {
-        const categoriesSnapshot = await getDocs(query(collection(db, "menuCategories"), orderBy("order")));
-        const itemsSnapshot = await getDocs(collection(db, "menuItems"));
-
-        const allItems = itemsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as MenuItem));
-
-        const fetchedCategories = categoriesSnapshot.docs.map(doc => {
-          const categoryData = doc.data();
-          return {
-            id: doc.id,
-            title: categoryData.title,
-            items: allItems.filter(item => item.categoryId === doc.id)
-          };
-        });
-
-        setCategories(fetchedCategories);
-      } catch (error) {
-        console.error("Error fetching menu:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
     fetchMenu();
   }, [])
 
@@ -92,7 +96,22 @@ export function Menu() {
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="w-12 h-12 text-orange-600 animate-spin mb-4" />
-              <p className="text-lg text-orange-800 font-medium">Loding Mithila Flavors...</p>
+              <p className="text-lg text-orange-800 font-medium">Loading Mithila Flavors...</p>
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <div className="bg-red-50 border-2 border-red-200 rounded-lg p-8 max-w-md text-center">
+                <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
+                <h4 className="text-lg font-semibold text-red-800 mb-2">Failed to Load Menu</h4>
+                <p className="text-red-600 mb-4">{error}</p>
+                <Button
+                  onClick={fetchMenu}
+                  className="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white"
+                >
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Try Again
+                </Button>
+              </div>
             </div>
           ) : categories.map((category, categoryIndex) => (
             <div key={categoryIndex}>

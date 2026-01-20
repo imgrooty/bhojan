@@ -17,19 +17,20 @@ export default function SignupPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName: name });
-      console.log("Signup successful");
       router.push("/");
     } catch (error) {
-      alert("Signup failed: " + (error as any).message);
+      setError((error as any).message || "Signup failed. Please try again.");
     }
 
     setIsLoading(false);
@@ -65,6 +66,13 @@ export default function SignupPage() {
 
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Error Message */}
+              {error && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-sm text-red-600">{error}</p>
+                </div>
+              )}
+
               {/* Name Field */}
               <div className="space-y-2">
                 <label htmlFor="name" className="text-sm font-medium text-amber-900">
@@ -118,7 +126,7 @@ export default function SignupPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     className="pl-10 pr-10 border-amber-200 focus:border-amber-400 focus:ring-amber-400/20"
                     required
-                    minLength={6}
+                    minLength={8}
                   />
                   <button
                     type="button"

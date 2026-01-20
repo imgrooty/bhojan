@@ -1,14 +1,20 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, getDocs, deleteDoc, query, writeBatch, doc, limit } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, limit } from "firebase/firestore";
 import { menuCategories, galleryImages } from "@/lib/seed-data";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const secret = searchParams.get('secret');
 
-  // Simple security check
-  if (secret !== 'seed123') {
+  // Security check with environment variable
+  const expectedSecret = process.env.SEED_SECRET;
+  if (!expectedSecret) {
+    console.error("SEED_SECRET environment variable is not set");
+    return NextResponse.json({ error: "Server misconfiguration" }, { status: 500 });
+  }
+
+  if (secret !== expectedSecret) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

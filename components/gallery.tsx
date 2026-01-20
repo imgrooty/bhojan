@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { db } from "@/lib/firebase"
 import { collection, getDocs } from "firebase/firestore"
-import { Loader2 } from "lucide-react"
+import { Loader2, AlertCircle, RefreshCw } from "lucide-react"
 
 interface GalleryImage {
   id?: string
@@ -17,19 +18,24 @@ export function Gallery() {
   const [selectedImage, setSelectedImage] = useState<number | null>(null)
   const [images, setImages] = useState<GalleryImage[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
+
+  const fetchGallery = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const querySnapshot = await getDocs(collection(db, "gallery"));
+      const fetchedImages = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as GalleryImage));
+      setImages(fetchedImages);
+    } catch (error) {
+      console.error("Error fetching gallery:", error);
+      setError("Failed to load gallery. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    async function fetchGallery() {
-      try {
-        const querySnapshot = await getDocs(collection(db, "gallery"));
-        const fetchedImages = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as GalleryImage));
-        setImages(fetchedImages);
-      } catch (error) {
-        console.error("Error fetching gallery:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
     fetchGallery();
   }, [])
 
@@ -50,6 +56,21 @@ export function Gallery() {
             <div className="col-span-full flex flex-col items-center justify-center py-20">
               <Loader2 className="w-12 h-12 text-orange-600 animate-spin mb-4" />
               <p className="text-lg text-orange-800 font-medium">Capturing Mithila's Beauty...</p>
+            </div>
+          ) : error ? (
+            <div className="col-span-full flex flex-col items-center justify-center py-20">
+              <div className="bg-red-50 border-2 border-red-200 rounded-lg p-8 max-w-md text-center">
+                <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
+                <h4 className="text-lg font-semibold text-red-800 mb-2">Failed to Load Gallery</h4>
+                <p className="text-red-600 mb-4">{error}</p>
+                <Button
+                  onClick={fetchGallery}
+                  className="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white"
+                >
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Try Again
+                </Button>
+              </div>
             </div>
           ) : images.map((image, index) => (
             <Card

@@ -158,9 +158,12 @@ export function Contact() {
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
                         <Input
+                          type="tel"
                           value={formData.phone}
                           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                           placeholder="Your phone number"
+                          pattern="[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,9}"
+                          title="Please enter a valid phone number (e.g., +977-9841234567)"
                           className="border-orange-200 focus:border-orange-400 focus:ring-orange-400"
                         />
                       </div>

@@ -17,18 +17,19 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      console.log("Login successful");
       router.push("/");
     } catch (error) {
-      alert("Login failed: " + (error as any).message);
+      setError((error as any).message || "Login failed. Please try again.");
     }
 
     setIsLoading(false);
@@ -36,26 +37,26 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     setIsLoading(true);
+    setError("");
     try {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
-      console.log("Google login successful");
       router.push("/");
     } catch (error) {
-      alert("Google login failed: " + (error as any).message);
+      setError((error as any).message || "Google login failed. Please try again.");
     }
     setIsLoading(false);
   };
 
   const handleGithubLogin = async () => {
     setIsLoading(true);
+    setError("");
     try {
       const provider = new GithubAuthProvider();
       await signInWithPopup(auth, provider);
-      console.log("Github login successful");
       router.push("/");
     } catch (error) {
-      alert("Github login failed: " + (error as any).message);
+      setError((error as any).message || "Github login failed. Please try again.");
     }
     setIsLoading(false);
   };
@@ -90,6 +91,13 @@ export default function LoginPage() {
 
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Error Message */}
+              {error && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-sm text-red-600">{error}</p>
+                </div>
+              )}
+
               {/* Email Field */}
               <div className="space-y-2">
                 <label htmlFor="email" className="text-sm font-medium text-amber-900">
