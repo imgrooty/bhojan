@@ -1,9 +1,17 @@
 import { NextResponse } from "next/server"
-import { db } from "@/lib/firebase"
+import { db, isFirebaseConfigured } from "@/lib/firebase"
 import { collection, addDoc, serverTimestamp } from "firebase/firestore"
 
 export async function POST(request: Request) {
   try {
+    // Check if Firebase is configured
+    if (!isFirebaseConfigured()) {
+      return NextResponse.json(
+        { error: "Firebase is not configured. Please contact the site administrator." },
+        { status: 503 }
+      )
+    }
+
     // In a real production environment, you should verify the Firebase ID token here
     // using firebase-admin to ensure the user is authenticated and is who they claim to be.
     // Example:
