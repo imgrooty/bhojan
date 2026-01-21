@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, Loader2, CheckCircle2 } from "lucide-react"
 import Link from "next/link"
-import { auth } from "@/lib/firebase"
+import { auth, isFirebaseConfigured } from "@/lib/firebase"
 import { onAuthStateChanged } from "firebase/auth"
 import { useRouter } from "next/navigation"
 
@@ -17,6 +17,11 @@ export default function CartPage() {
   const router = useRouter()
 
   const handleCheckout = async () => {
+    if (!isFirebaseConfigured()) {
+      alert("Authentication is currently unavailable. Please contact the administrator.");
+      return;
+    }
+
     const user = auth.currentUser
     if (!user) {
       router.push("/login?redirect=/cart")

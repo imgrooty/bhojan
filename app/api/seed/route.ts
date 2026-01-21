@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
-import { db } from "@/lib/firebase";
+import { db, isFirebaseConfigured } from "@/lib/firebase";
 import { collection, addDoc, getDocs, query, limit } from "firebase/firestore";
 import { menuCategories, galleryImages } from "@/lib/seed-data";
 
@@ -17,6 +17,14 @@ export async function GET(request: Request) {
   const expectedSecret = process.env.SEED_SECRET || 'seed123';
   if (!secret || secret !== expectedSecret) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Check if Firebase is configured
+  if (!isFirebaseConfigured()) {
+    return NextResponse.json(
+      { error: "Firebase is not configured. Please set up Firebase environment variables." },
+      { status: 503 }
+    );
   }
 
   try {

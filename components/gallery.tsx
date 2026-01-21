@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
-import { db } from "@/lib/firebase"
+import { db, isFirebaseConfigured } from "@/lib/firebase"
 import { collection, getDocs } from "firebase/firestore"
 import { Loader2 } from "lucide-react"
 
@@ -22,6 +22,14 @@ export function Gallery() {
   const fetchGallery = async () => {
     setLoading(true);
     setError(null);
+    
+    // Check if Firebase is configured before attempting to fetch
+    if (!isFirebaseConfigured()) {
+      setLoading(false);
+      setImages([]);
+      return;
+    }
+
     try {
       const querySnapshot = await getDocs(collection(db, "gallery"));
 

@@ -6,7 +6,7 @@ import { Eye, EyeOff, Mail, Lock, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { auth } from "@/lib/firebase";
+import { auth, isFirebaseConfigured } from "@/lib/firebase";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, GithubAuthProvider } from "firebase/auth";
 import { useRouter } from "next/navigation";
 
@@ -25,6 +25,12 @@ export default function LoginPage() {
     setIsLoading(true);
     setError(null);
 
+    if (!isFirebaseConfigured()) {
+      setError("Authentication is currently unavailable. Please contact the administrator.");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       await signInWithEmailAndPassword(auth, email, password);
       router.push("/");
@@ -38,6 +44,13 @@ export default function LoginPage() {
   const handleGoogleLogin = async () => {
     setIsLoading(true);
     setError(null);
+
+    if (!isFirebaseConfigured()) {
+      setError("Authentication is currently unavailable. Please contact the administrator.");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
@@ -51,6 +64,13 @@ export default function LoginPage() {
   const handleGithubLogin = async () => {
     setIsLoading(true);
     setError(null);
+
+    if (!isFirebaseConfigured()) {
+      setError("Authentication is currently unavailable. Please contact the administrator.");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const provider = new GithubAuthProvider();
       await signInWithPopup(auth, provider);
