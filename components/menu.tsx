@@ -5,9 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Eye, Star, Loader2 } from "lucide-react"
+import { Eye, Star, Loader2, Plus, ShoppingCart } from "lucide-react"
 import { db } from "@/lib/firebase"
 import { collection, getDocs, query, orderBy } from "firebase/firestore"
+import { useCart } from "@/lib/cart-context"
 
 interface MenuItem {
   id?: string
@@ -36,32 +37,42 @@ export function Menu() {
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null)
   const [categories, setCategories] = useState<MenuCategory[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const { addToCart } = useCart()
+
+  const fetchMenu = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const categoriesSnapshot = await getDocs(query(collection(db, "menuCategories"), orderBy("order")));
+      const itemsSnapshot = await getDocs(collection(db, "menuItems"));
+
+      if (categoriesSnapshot.empty) {
+        setCategories([]);
+        return;
+      }
+
+      const allItems = itemsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as MenuItem));
+
+      const fetchedCategories = categoriesSnapshot.docs.map(doc => {
+        const categoryData = doc.data();
+        return {
+          id: doc.id,
+          title: categoryData.title,
+          items: allItems.filter(item => item.categoryId === doc.id)
+        };
+      });
+
+      setCategories(fetchedCategories);
+    } catch (err: any) {
+      console.error("Error fetching menu:", err);
+      setError("Unable to load the menu at the moment. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    async function fetchMenu() {
-      try {
-        const categoriesSnapshot = await getDocs(query(collection(db, "menuCategories"), orderBy("order")));
-        const itemsSnapshot = await getDocs(collection(db, "menuItems"));
-
-        const allItems = itemsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as MenuItem));
-
-        const fetchedCategories = categoriesSnapshot.docs.map(doc => {
-          const categoryData = doc.data();
-          return {
-            id: doc.id,
-            title: categoryData.title,
-            items: allItems.filter(item => item.categoryId === doc.id)
-          };
-        });
-
-        setCategories(fetchedCategories);
-      } catch (error) {
-        console.error("Error fetching menu:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
     fetchMenu();
   }, [])
 
@@ -92,7 +103,19 @@ export function Menu() {
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="w-12 h-12 text-orange-600 animate-spin mb-4" />
-        <p className="text-lg text-orange-800 font-medium">Loading Mithila Flavors...</p>
+              <p className="text-lg text-orange-800 font-medium">Loading Mithila Flavors...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-20 bg-orange-50 rounded-2xl border-2 border-orange-100">
+              <p className="text-red-600 mb-6 text-lg font-medium">{error}</p>
+              <Button onClick={fetchMenu} className="bg-orange-600 hover:bg-orange-700">
+                Retry Loading Menu
+              </Button>
+            </div>
+          ) : categories.length === 0 ? (
+            <div className="text-center py-20 bg-orange-50 rounded-2xl border-2 border-orange-100">
+              <p className="text-orange-800 text-lg font-medium mb-2">Our kitchen is currently being updated.</p>
+              <p className="text-gray-600">Please check back soon for our authentic Mithila menu!</p>
             </div>
           ) : categories.map((category, categoryIndex) => (
             <div key={categoryIndex}>
@@ -243,7 +266,19 @@ export function Menu() {
                             )}
 
                             {/* Action Button */}
-                            <Button className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white py-3 text-lg font-semibold">
+                            <Button
+                              onClick={() => {
+                                addToCart({
+                                  id: item.id || item.name,
+                                  name: item.name,
+                                  price: item.price,
+                                  image: item.image,
+                                  quantity: 1
+                                })
+                              }}
+                              className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white py-3 text-lg font-semibold"
+                            >
+                              <ShoppingCart className="w-5 h-5 mr-2" />
                               Add to Order - {item.price}
                             </Button>
                           </div>
