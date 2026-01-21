@@ -6,7 +6,7 @@ import { Menu, X, ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { useCart } from "@/lib/cart-context"
-import { auth } from "@/lib/firebase"
+import { auth, isFirebaseConfigured } from "@/lib/firebase"
 import { onAuthStateChanged, User } from "firebase/auth"
 
 export function Header() {
@@ -19,6 +19,11 @@ export function Header() {
   const cartItemsCount = cart.reduce((sum, item) => sum + item.quantity, 0)
 
   useEffect(() => {
+    // Only set up auth listener if Firebase is configured
+    if (!isFirebaseConfigured()) {
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser)
     })

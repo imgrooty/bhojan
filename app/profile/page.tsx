@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { auth } from "@/lib/firebase"
+import { auth, isFirebaseConfigured } from "@/lib/firebase"
 import { onAuthStateChanged, User, signOut } from "firebase/auth"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -15,6 +15,12 @@ export default function ProfilePage() {
   const router = useRouter()
 
   useEffect(() => {
+    // If Firebase is not configured, redirect to home
+    if (!isFirebaseConfigured()) {
+      router.push("/");
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
         setUser(firebaseUser)
@@ -27,6 +33,11 @@ export default function ProfilePage() {
   }, [router])
 
   const handleLogout = async () => {
+    if (!isFirebaseConfigured()) {
+      router.push("/");
+      return;
+    }
+
     try {
       await signOut(auth)
       router.push("/")

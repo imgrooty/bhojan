@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Eye, Star, Loader2, Plus, ShoppingCart } from "lucide-react"
-import { db } from "@/lib/firebase"
+import { db, isFirebaseConfigured } from "@/lib/firebase"
 import { collection, getDocs, query, orderBy } from "firebase/firestore"
 import { useCart } from "@/lib/cart-context"
 
@@ -43,6 +43,14 @@ export function Menu() {
   const fetchMenu = async () => {
     setLoading(true);
     setError(null);
+    
+    // Check if Firebase is configured before attempting to fetch
+    if (!isFirebaseConfigured()) {
+      setLoading(false);
+      setCategories([]);
+      return;
+    }
+
     try {
       const categoriesSnapshot = await getDocs(query(collection(db, "menuCategories"), orderBy("order")));
       const itemsSnapshot = await getDocs(collection(db, "menuItems"));

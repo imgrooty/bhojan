@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { MapPin, Phone, Mail, Clock, Loader2, CheckCircle2 } from "lucide-react"
-import { db } from "@/lib/firebase"
+import { db, isFirebaseConfigured } from "@/lib/firebase"
 import { collection, addDoc, serverTimestamp } from "firebase/firestore"
 
 export function Contact() {
@@ -25,6 +25,13 @@ export function Contact() {
     e.preventDefault();
     setLoading(true);
     setError("");
+
+    // Check if Firebase is configured
+    if (!isFirebaseConfigured()) {
+      setError("Contact form is currently unavailable. Please email us directly at info@bhojan.com");
+      setLoading(false);
+      return;
+    }
 
     try {
       await addDoc(collection(db, "messages"), {
